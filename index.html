@@ -63,14 +63,27 @@
 
     /* In đẹp hơn */
     @media print {
-      body * { visibility: hidden; }
-      #htmlPreview, #htmlPreview * { visibility: visible; }
+      @page {
+        size: 280px 176px;
+        margin: 0;
+      }
+      body * {
+        visibility: hidden;
+      }
+      #htmlPreview, #htmlPreview * {
+        visibility: visible;
+      }
       #htmlPreview {
         position: absolute;
         left: 0;
         top: 0;
-        width: 100%;
-        height: auto;
+        width: 280px;
+        height: 176px;
+        transform: scale(1);
+        transform-origin: top left;
+      }
+      iframe {
+        height: 176px !important;
       }
     }
   </style>
