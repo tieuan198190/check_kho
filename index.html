@@ -62,30 +62,57 @@
     .pdf-button { background: #2196F3 !important; }
 
     /* In đẹp hơn */
+    /* In chuẩn 203x203dpi cho nhãn 35x22mm (≈280x176 dots) */
     @media print {
+      /* Kích thước trang chính xác theo mm, bỏ mọi lề của trình duyệt */
       @page {
-        size: 280px 176px;
+        size: 35mm 22mm;
         margin: 0;
       }
-      body * {
-        visibility: hidden;
+
+      /* Không cho trình duyệt tự thu nhỏ/nén nội dung khi in */
+      html, body {
+        width: 35mm;
+        height: 22mm;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
+
+      /* Ẩn tất cả trừ khung xem trước nhãn */
+      body * { visibility: hidden !important; }
+
       #htmlPreview, #htmlPreview * {
-        visibility: visible;
+        visibility: visible !important;
       }
+
+      /* Đặt khung nhãn đúng kích thước thật, neo góc trên trái */
       #htmlPreview {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 280px;
-        height: 176px;
-        transform: scale(1);
-        transform-origin: top left;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+
+        /* Quan trọng: dùng đơn vị mm để map đúng 203dpi của máy in */
+        width: 35mm !important;
+        height: 22mm !important;
+
+        /* Không scale để giữ đúng số “dots” (280×176) */
+        transform: none !important;
+        transform-origin: top left !important;
+
+        border: 0 !important;
       }
+
+      /* Tránh iframe thay đổi chiều cao khi in */
       iframe {
-        height: 176px !important;
+        width: 35mm !important;
+        height: 22mm !important;
+        border: 0 !important;
       }
     }
+
   </style>
 </head>
 <body>
