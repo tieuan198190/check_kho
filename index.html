@@ -7,6 +7,10 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#f5d7fa" />
   <style>
+    :root{
+      --fix-scale-x: 1.00; /* giữ nguyên 1:1 vì nhãn giờ vuông */
+    }
+
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
@@ -14,9 +18,7 @@
       max-width: 600px;
       margin: 0 auto;
     }
-    h2 {
-      color: #d147a3;
-    }
+    h2 { color: #d147a3; }
     input, button {
       width: 100%;
       padding: 12px;
@@ -25,55 +27,29 @@
       border: 1px solid #ccc;
       border-radius: 6px;
     }
-    button {
-      background: #d147a3;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
+    button { background:#d147a3; color:#fff; font-weight:bold; cursor:pointer; }
+    button:hover { opacity:.9; }
     #preview {
-      margin-top: 20px;
-      border: 1px solid #ddd;
-      padding: 15px;
-      display: none;
-      background: white;
-      border-radius: 8px;
+      margin-top: 20px; border:1px solid #ddd; padding:15px; display:none;
+      background:#fff; border-radius:8px;
     }
     iframe {
-      width: 100%;
-      height: 800px;
-      border: 1px solid #eee;
-      margin-top: 10px;
+      width: 100%; height: 800px; border:1px solid #eee; margin-top:10px;
+      transform: scaleX(var(--fix-scale-x));
+      transform-origin: top left;
     }
-    .action-buttons {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .action-buttons button {
-      flex: 1;
-      padding: 10px;
-      border-radius: 6px;
-    }
-    .print-button { background: #4CAF50 !important; }
-    .pdf-button { background: #2196F3 !important; }
+    .action-buttons { display:flex; gap:10px; margin-bottom:10px; }
+    .action-buttons button { flex:1; padding:10px; border-radius:6px; }
+    .print-button { background:#4CAF50 !important; }
+    .pdf-button   { background:#2196F3 !important; }
 
-    /* In đẹp hơn */
-    /* In chuẩn 203x203dpi cho nhãn 35x22mm (≈280x176 dots) */
+    /* In chuẩn 203dpi cho nhãn 35x35mm */
     @media print {
-      /* Kích thước trang chính xác theo mm, bỏ mọi lề của trình duyệt */
-      @page {
-        size: 35mm 22mm;
-        margin: 0;
-      }
+      @page { size: 35mm 35mm; margin: 0; }
 
-      /* Không cho trình duyệt tự thu nhỏ/nén nội dung khi in */
       html, body {
         width: 35mm;
-        height: 22mm;
+        height: 35mm;
         margin: 0 !important;
         padding: 0 !important;
         overflow: hidden !important;
@@ -81,44 +57,33 @@
         print-color-adjust: exact;
       }
 
-      /* Ẩn tất cả trừ khung xem trước nhãn */
       body * { visibility: hidden !important; }
+      #htmlPreview, #htmlPreview * { visibility: visible !important; }
 
-      #htmlPreview, #htmlPreview * {
-        visibility: visible !important;
-      }
-
-      /* Đặt khung nhãn đúng kích thước thật, neo góc trên trái */
       #htmlPreview {
         position: absolute !important;
         left: 0 !important;
         top: 0 !important;
-
-        /* Quan trọng: dùng đơn vị mm để map đúng 203dpi của máy in */
         width: 35mm !important;
-        height: 22mm !important;
-
-        /* Không scale để giữ đúng số “dots” (280×176) */
-        transform: none !important;
-        transform-origin: top left !important;
-
+        height: 35mm !important;
         border: 0 !important;
+        transform: scaleX(var(--fix-scale-x)) !important;
+        transform-origin: top left !important;
       }
 
-      /* Tránh iframe thay đổi chiều cao khi in */
       iframe {
         width: 35mm !important;
-        height: 22mm !important;
+        height: 35mm !important;
         border: 0 !important;
       }
     }
-
   </style>
 </head>
 <body>
   <h2>✅ Nhập hàng mới – Cô Mập Fashion</h2>
-  <input type="text" id="sku" placeholder="SKU (Ví dụ: A350)" value="A350" />
-  <input type="text" id="size" placeholder="Size (Ví dụ: XL)" value="XL" />
+
+  <input type="text" id="sku" placeholder="SKU (VD: A350)" value="A350" />
+  <input type="text" id="size" placeholder="Size (VD: XL)" value="XL" />
   <input type="number" id="qty" placeholder="Số lượng" value="15" min="1" />
   <input type="text" id="staff" placeholder="Nhân viên" value="Linh" />
   <button onclick="submitImport()">📤 Gửi nhập hàng</button>
@@ -133,17 +98,23 @@
   </div>
 
   <script>
-    async function submitImport() {
-      const sku = document.getElementById("sku").value.trim();
-      const size = document.getElementById("size").value.trim();
-      const qty = parseInt(document.getElementById("qty").value);
-      const staff = document.getElementById("staff").value.trim();
+    const scaleKey = 'label_scaleX';
+    function setScaleX(v){
+      const val = Math.max(0.90, Math.min(1.20, Number(v) || 1));
+      document.documentElement.style.setProperty('--fix-scale-x', String(val));
+      localStorage.setItem(scaleKey, String(val));
+    }
+    setScaleX(localStorage.getItem(scaleKey) || 1.00);
 
+    async function submitImport() {
+      const sku   = document.getElementById("sku").value.trim();
+      const size  = document.getElementById("size").value.trim();
+      const qty   = parseInt(document.getElementById("qty").value);
+      const staff = document.getElementById("staff").value.trim();
       if (!sku || !size || !qty || !staff) {
         alert("Vui lòng điền đầy đủ thông tin!");
         return;
       }
-
       const payload = { sku, size, qty, staff };
 
       try {
@@ -152,51 +123,25 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         let data;
-        try {
-          data = await res.json();
-        } catch (e) {
-          throw new Error(`Phản hồi không phải JSON: ${await res.text().then(t => t.substring(0, 200))}`);
-        }
-
-        console.log("Data received:", data);
+        try { data = await res.json(); }
+        catch (e) { throw new Error(`Phản hồi không phải JSON: ${ (await res.text()).substring(0,200) }`); }
 
         let htmlUrl;
-        if (Array.isArray(data)) {
-          if (data.length > 0 && data[0] && data[0].url) {
-            htmlUrl = data[0].url;
-          }
-        } else if (typeof data === 'object' && data !== null && data.url) {
-          htmlUrl = data.url;
-        }
-
-        if (!htmlUrl) {
-          throw new Error("Phản hồi không chứa URL hợp lệ");
-        }
-
-        if (!htmlUrl.startsWith("data:text/html;base64,")) {
-          throw new Error("URL không phải dữ liệu base64 HTML");
-        }
+        if (Array.isArray(data) && data[0]?.url) htmlUrl = data[0].url;
+        else if (data && typeof data === 'object' && data.url) htmlUrl = data.url;
+        if (!htmlUrl) throw new Error("Phản hồi không chứa URL hợp lệ");
+        if (!htmlUrl.startsWith("data:text/html;base64,")) throw new Error("URL không phải dữ liệu base64 HTML");
 
         const base64Html = htmlUrl.split(",")[1];
-        if (!base64Html) {
-          throw new Error("Không thể trích xuất base64");
-        }
-
         const htmlContent = atob(base64Html);
         const blob = new Blob([htmlContent], { type: "text/html" });
-        const url = URL.createObjectURL(blob);
-
+        const url  = URL.createObjectURL(blob);
         document.getElementById("preview").style.display = "block";
         document.getElementById("htmlPreview").src = url;
-
       } catch (err) {
-        console.error("Lỗi khi gọi webhook:", err);
+        console.error("Lỗi webhook:", err);
         alert(`❌ Lỗi: ${err.message}`);
       }
     }
@@ -207,7 +152,7 @@
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
       } else {
-        alert("Không thể in. Vui lòng thử lại sau khi tải xong.");
+        alert("Không thể in. Vui lòng thử lại.");
       }
     }
 
@@ -217,23 +162,14 @@
         alert("Chưa có nội dung để tải. Vui lòng chờ tải xong.");
         return;
       }
-
       const htmlContent = iframe.contentDocument.documentElement.outerHTML;
       const blob = new Blob([htmlContent], { type: "text/html" });
-      const url = URL.createObjectURL(blob);
-      const win = window.open(url, '_blank');
-      if (win) {
-        win.onload = () => {
-          win.focus();
-          // Gợi ý in → lưu PDF
-          setTimeout(() => win.print(), 500);
-        };
-      } else {
-        alert("Vui lòng cho phép pop-up để tải PDF.");
-      }
+      const url  = URL.createObjectURL(blob);
+      const win  = window.open(url, '_blank');
+      if (win) win.onload = () => { win.focus(); setTimeout(() => win.print(), 500); };
+      else alert("Vui lòng cho phép pop-up để tải PDF.");
     }
 
-    // Đăng ký Service Worker (nếu có)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').catch(console.warn);
