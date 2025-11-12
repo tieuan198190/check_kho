@@ -1,180 +1,879 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nhập Hàng - Cô Mập Fashion</title>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#f5d7fa" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>In tem - Cô Mập Fashion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --fix-scale-x: 1.00; /* giữ nguyên 1:1 vì nhãn giờ vuông */
+    :root {
+      color-scheme: light;
+      --surface: #f4f5f7;
+      --surface-tonal: #ffffff;
+      --text: #1b1d23;
+      --text-muted: #5e6270;
+      --border: #e2e5ec;
+      --accent: #1d4ed8;
+      --danger: #c0392b;
+      --success: #0f7b3a;
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: linear-gradient(to right, #fdfbfb, #ebedee);
-      max-width: 600px;
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      padding: 32px clamp(16px, 3vw, 48px);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+
+    main {
+      max-width: 1200px;
       margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
-    h2 { color: #d147a3; }
-    input, button {
+
+    .card {
+      background: var(--surface-tonal);
+      border-radius: var(--radius);
+      padding: 24px;
+      border: 1px solid var(--border);
+    }
+
+    .page-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .page-header h1 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 600;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input,
+    select {
       width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      background-color: #fff;
     }
-    button { background:#d147a3; color:#fff; font-weight:bold; cursor:pointer; }
-    button:hover { opacity:.9; }
-    #preview {
-      margin-top: 20px; border:1px solid #ddd; padding:15px; display:none;
-      background:#fff; border-radius:8px;
-    }
-    iframe {
-      width: 100%; height: 800px; border:1px solid #eee; margin-top:10px;
-      transform: scaleX(var(--fix-scale-x));
-      transform-origin: top left;
-    }
-    .action-buttons { display:flex; gap:10px; margin-bottom:10px; }
-    .action-buttons button { flex:1; padding:10px; border-radius:6px; }
-    .print-button { background:#4CAF50 !important; }
-    .pdf-button   { background:#2196F3 !important; }
 
-    /* In chuẩn 203dpi cho nhãn 35x35mm */
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      background-color: #fefefe;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th,
+    td {
+      padding: 14px 12px;
+      border-bottom: 1px solid rgba(29, 27, 32, 0.07);
+      text-align: left;
+    }
+
+    th {
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      background: rgba(103, 80, 164, 0.08);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr.has-error {
+      background: rgba(220, 38, 38, 0.05);
+    }
+
+    .table-wrapper {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 28px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .actions.single-action {
+      justify-content: flex-end;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(29, 78, 216, 0.08);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    button {
+      font-family: inherit;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 22px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    .status-line {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+    }
+
+    .status-line.success {
+      background: rgba(15, 123, 58, 0.08);
+      border-color: rgba(15, 123, 58, 0.25);
+      color: var(--success);
+    }
+
+    .status-line.error {
+      background: rgba(192, 57, 43, 0.08);
+      border-color: rgba(192, 57, 43, 0.3);
+      color: var(--danger);
+    }
+
+    .table-summary {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      color: var(--text-muted);
+    }
+
+    .layout-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+
+    .label-page {
+      width: 105mm;
+      max-width: 100%;
+      height: 22mm;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      display: flex;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.25);
+      position: relative;
+    }
+
+    .label-page::after {
+      content: attr(data-page);
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    .label-cell {
+      flex: 1;
+      min-width: 35mm;
+      max-width: calc(100% / 3);
+      border-right: 1px dashed rgba(15, 23, 42, 0.15);
+      display: flex;
+      gap: 6px;
+      padding: 2mm 2mm 2mm 2.5mm;
+      align-items: center;
+      height: 22mm;
+    }
+
+    .label-cell:last-child {
+      border-right: none;
+    }
+
+    .label-cell.is-blank {
+      background: repeating-linear-gradient(45deg, #f1f5f9 0, #f1f5f9 6px, #fff 6px, #fff 12px);
+      justify-content: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .label-qr {
+      width: 20mm;
+      min-width: 20mm;
+      height: 22mm;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      border-right: 1px solid rgba(15, 23, 42, 0.08);
+      position: relative;
+      padding: 0;
+    }
+
+    .label-qr img {
+      width: 20mm;
+      height: 20mm;
+      object-fit: contain;
+    }
+
+    .label-qr .qr-fallback {
+      position: absolute;
+      inset: 0;
+      display: none;
+      font-size: 0.65rem;
+      color: var(--danger);
+      text-align: center;
+      line-height: 22mm;
+      background: repeating-linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0 6px, rgba(255, 255, 255, 0.5) 6px 12px);
+    }
+
+    .label-qr.qr-missing .qr-fallback {
+      display: block;
+    }
+
+    .label-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      line-height: 1.25;
+      font-size: 0.78rem;
+      width: 15mm;
+      height: 22mm;
+    }
+
+    .label-text .code {
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .label-text .size {
+      text-transform: uppercase;
+      font-weight: 600;
+      font-size: 0.78rem;
+    }
+
+    #printArea {
+      display: none;
+    }
+
+    .print-guide ul {
+      margin: 12px 0 0 16px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding-left: 16px;
+    }
+
+    .print-guide li + li {
+      margin-top: 6px;
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 16px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .label-page {
+        width: 100%;
+      }
+    }
+
+    @page {
+      size: 105mm 22mm;
+      margin: 0;
+    }
+
     @media print {
-      @page { size: 35mm 35mm; margin: 0; }
-
-      html, body {
-        width: 35mm;
-        height: 35mm;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: hidden !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+      body {
+        padding: 0;
+        background: #fff;
       }
 
-      body * { visibility: hidden !important; }
-      #htmlPreview, #htmlPreview * { visibility: visible !important; }
-
-      #htmlPreview {
-        position: absolute !important;
-        left: 0 !important;
-        top: 0 !important;
-        width: 35mm !important;
-        height: 35mm !important;
-        border: 0 !important;
-        transform: scaleX(var(--fix-scale-x)) !important;
-        transform-origin: top left !important;
+      main {
+        display: none;
       }
 
-      iframe {
-        width: 35mm !important;
-        height: 35mm !important;
-        border: 0 !important;
+      #printArea {
+        display: block;
+        margin: 0;
+      }
+
+      #printArea .label-page {
+        box-shadow: none;
+        border-radius: 0;
+      }
+
+      #printArea .label-page::after {
+        display: none;
       }
     }
   </style>
 </head>
+
 <body>
-  <h2>✅ Nhập hàng mới – Cô Mập Fashion</h2>
+  <main>
+    <header class="card page-header">
+      <div>
+        <h1>In tem - Cô Mập Fashion</h1>
+      </div>
+    </header>
 
-  <input type="text" id="sku" placeholder="SKU (VD: A350)" value="A350" />
-  <input type="text" id="size" placeholder="Size (VD: XL)" value="XL" />
-  <input type="number" id="qty" placeholder="Số lượng" value="15" min="1" />
-  <input type="text" id="staff" placeholder="Nhân viên" value="Linh" />
-  <button onclick="submitImport()">📤 Gửi nhập hàng</button>
+    <section class="card">
+      <h2>Nhập dòng hàng</h2>
+      <div class="input-grid">
+        <div>
+          <label for="codeInput">Mã</label>
+          <input type="text" id="codeInput" placeholder="Ví dụ: A123" autocomplete="off">
+        </div>
+        <div>
+          <label for="sizeInput">Size</label>
+          <select id="sizeInput">
+            <option value="">Chọn size</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+            <option value="XXL">XXL</option>
+            <option value="XXXL">XXXL</option>
+          </select>
+        </div>
+        <div>
+          <label for="qtyInput">Số lượng</label>
+          <input type="number" id="qtyInput" placeholder=">= 1" min="1">
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn-primary" id="addItemBtn">Thêm dòng</button>
+        <button class="btn-outline" id="resetBtn" type="button">Reset</button>
+      </div>
+      <div id="formMessage" class="status-line info" role="status">Nhập thông tin &amp; nhấn “Thêm dòng”.</div>
+    </section>
 
-  <div id="preview">
-    <h3>📎 Xem trước QR:</h3>
-    <div class="action-buttons">
-      <button class="print-button" onclick="printQR()">🖨️ In QR</button>
-      <button class="pdf-button" onclick="downloadPDF()">💾 Tải PDF</button>
-    </div>
-    <iframe id="htmlPreview"></iframe>
-  </div>
+    <section class="card">
+      <div class="table-summary">
+        <span id="itemCounter">0 dòng</span>
+        <span id="qtyCounter">0 tem</span>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Mã</th>
+              <th>Size</th>
+              <th>Số lượng</th>
+              <th>Ghi chú</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody">
+            <tr>
+              <td colspan="6" class="empty-state">Chưa có dòng nào được thêm.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="actions single-action">
+        <button class="btn-primary" id="sendWebhookBtn" disabled>Gửi</button>
+      </div>
+      <div id="statusBox" class="status-line info">Nhấn “Gửi” sau khi thêm đầy đủ dòng.</div>
+    </section>
+
+    <section class="card">
+      <div class="layout-header">
+        <div>
+          <h2>Bản dàn tem</h2>
+        </div>
+        <button class="btn-outline" id="printBtn" type="button" style="display: none;" disabled>In</button>
+      </div>
+      <div id="layoutPreview" class="layout-grid">
+        <div class="empty-state">Hãy nhấn “Gửi” để nhận tem.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Vùng chỉ dùng cho in -->
+  <section id="printArea" aria-hidden="true"></section>
 
   <script>
-    const scaleKey = 'label_scaleX';
-    function setScaleX(v){
-      const val = Math.max(0.90, Math.min(1.20, Number(v) || 1));
-      document.documentElement.style.setProperty('--fix-scale-x', String(val));
-      localStorage.setItem(scaleKey, String(val));
-    }
-    setScaleX(localStorage.getItem(scaleKey) || 1.00);
+    window.addEventListener('DOMContentLoaded', () => {
+      const WEBHOOK_URL = 'https://n8n-hongnhung198198-u40833.vm.elestio.app/webhook/import-items';
+      const CODE_REGEX = /^[ANT]\d{3}$/i;
+      const ALLOWED_SIZES = ['M', 'L', 'XL', 'XXL', 'XXXL'];
 
-    async function submitImport() {
-      const sku   = document.getElementById("sku").value.trim();
-      const size  = document.getElementById("size").value.trim();
-      const qty   = parseInt(document.getElementById("qty").value);
-      const staff = document.getElementById("staff").value.trim();
-      if (!sku || !size || !qty || !staff) {
-        alert("Vui lòng điền đầy đủ thông tin!");
-        return;
-      }
-      const payload = { sku, size, qty, staff };
+      const state = {
+        items: [],
+        hashes: [],
+        layoutReady: false,
+        loading: false
+      };
 
-      try {
-        const res = await fetch("https://n8n-hongnhung198198-u40833.vm.elestio.app/webhook/import-items", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+      const els = {
+        code: document.getElementById('codeInput'),
+        size: document.getElementById('sizeInput'),
+        qty: document.getElementById('qtyInput'),
+        addBtn: document.getElementById('addItemBtn'),
+        resetBtn: document.getElementById('resetBtn'),
+        formMessage: document.getElementById('formMessage'),
+        itemCounter: document.getElementById('itemCounter'),
+        qtyCounter: document.getElementById('qtyCounter'),
+        body: document.getElementById('itemsBody'),
+        sendBtn: document.getElementById('sendWebhookBtn'),
+        printBtn: document.getElementById('printBtn'),
+        statusBox: document.getElementById('statusBox'),
+        layoutPreview: document.getElementById('layoutPreview'),
+        printArea: document.getElementById('printArea')
+      };
+
+      const renderTable = () => {
+        if (!state.items.length) {
+          els.body.innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có dòng nào được thêm.</td></tr>';
+          renderTotals();
+          return;
+        }
+
+        const rows = state.items.map((item, index) => {
+          const note = item.error ? `<span style="color: var(--danger);">${item.error}</span>` : '—';
+          return `
+            <tr data-id="${item.id}" class="${item.error ? 'has-error' : ''}">
+              <td>${index + 1}</td>
+              <td>${item.code}</td>
+              <td>${item.size}</td>
+              <td>${item.qty}</td>
+              <td>${note}</td>
+              <td>
+                <button class="btn-outline" data-remove="${item.id}" title="Xóa dòng">Xóa</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+        els.body.innerHTML = rows;
+        renderTotals();
+      };
+
+      const renderTotals = () => {
+        els.itemCounter.textContent = `${state.items.length} dòng`;
+        const qtyTotal = state.items.reduce((sum, i) => sum + i.qty, 0);
+        els.qtyCounter.textContent = `${qtyTotal} tem`;
+      };
+
+      const setStatus = (type, message) => {
+        els.statusBox.textContent = message;
+        els.statusBox.className = `status-line ${type}`;
+      };
+
+      const setFormMessage = (type, message) => {
+        els.formMessage.textContent = message;
+        els.formMessage.className = `status-line ${type}`;
+      };
+
+      const updateButtons = () => {
+        const hasItems = state.items.length > 0;
+        els.sendBtn.disabled = !hasItems || state.loading;
+      };
+
+      const showPrintButton = () => {
+        els.printBtn.style.display = '';
+        els.printBtn.disabled = false;
+      };
+
+      const hidePrintButton = () => {
+        els.printBtn.style.display = 'none';
+        els.printBtn.disabled = true;
+      };
+
+      const resetAll = () => {
+        state.items = [];
+        state.hashes = [];
+        state.layoutReady = false;
+        state.loading = false;
+        renderTable();
+        els.layoutPreview.innerHTML = '<div class="empty-state">Chưa có dữ liệu hashes. Hãy nhấn “Gửi” để nhận tem.</div>';
+        els.printArea.innerHTML = '';
+        hidePrintButton();
+        resetForm();
+        setStatus('info', 'Đã reset toàn bộ dữ liệu.');
+        setFormMessage('info', 'Nhập thông tin & nhấn “Thêm dòng”.');
+        updateButtons();
+      };
+
+      const sanitizeCode = (value) => value.trim().toUpperCase();
+      const sanitizeSize = (value) => value.trim().toUpperCase();
+      const sanitizeQty = (value) => Number.parseInt(value, 10) || 0;
+
+      const validateItem = ({ code, size, qty }) => {
+        if (!code) return 'Vui lòng nhập mã.';
+        if (!CODE_REGEX.test(code)) return 'Mã phải bắt đầu bằng A/N/T + 3 số (ví dụ A123).';
+        if (!size) return 'Chọn size.';
+        if (!ALLOWED_SIZES.includes(size)) return 'Size chỉ nhận M, L, XL, XXL, XXXL.';
+        if (!Number.isInteger(qty) || qty < 1) return 'Số lượng phải là số nguyên ≥ 1.';
+        return '';
+      };
+
+      const resetForm = () => {
+        els.code.value = '';
+        els.size.value = '';
+        els.qty.value = '';
+        els.code.focus();
+      };
+
+      const addItem = () => {
+        const code = sanitizeCode(els.code.value);
+        const size = sanitizeSize(els.size.value);
+        const qty = sanitizeQty(els.qty.value);
+        const validation = validateItem({ code, size, qty });
+
+        if (validation) {
+          setFormMessage('error', validation);
+          return;
+        }
+
+        state.items.push({
+          id: cryptoId(),
+          code,
+          size,
+          qty,
+          error: ''
         });
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        let data;
-        try { data = await res.json(); }
-        catch (e) { throw new Error(`Phản hồi không phải JSON: ${ (await res.text()).substring(0,200) }`); }
 
-        let htmlUrl;
-        if (Array.isArray(data) && data[0]?.url) htmlUrl = data[0].url;
-        else if (data && typeof data === 'object' && data.url) htmlUrl = data.url;
-        if (!htmlUrl) throw new Error("Phản hồi không chứa URL hợp lệ");
-        if (!htmlUrl.startsWith("data:text/html;base64,")) throw new Error("URL không phải dữ liệu base64 HTML");
+        setFormMessage('success', 'Đã thêm vào bảng tạm.');
+        renderTable();
+        updateButtons();
+        resetForm();
+      };
 
-        const base64Html = htmlUrl.split(",")[1];
-        const htmlContent = atob(base64Html);
-        const blob = new Blob([htmlContent], { type: "text/html" });
-        const url  = URL.createObjectURL(blob);
-        document.getElementById("preview").style.display = "block";
-        document.getElementById("htmlPreview").src = url;
-      } catch (err) {
-        console.error("Lỗi webhook:", err);
-        alert(`❌ Lỗi: ${err.message}`);
-      }
-    }
+      const removeItem = (id) => {
+        state.items = state.items.filter((item) => item.id !== id);
+        renderTable();
+        updateButtons();
+      };
 
-    function printQR() {
-      const iframe = document.getElementById("htmlPreview");
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
-      } else {
-        alert("Không thể in. Vui lòng thử lại.");
-      }
-    }
+      const validateAllRows = () => {
+        let hasError = false;
+        state.items = state.items.map((item) => {
+          const error = validateItem(item);
+          if (error) hasError = true;
+          return { ...item, error };
+        });
+        renderTable();
+        return !hasError;
+      };
 
-    function downloadPDF() {
-      const iframe = document.getElementById("htmlPreview");
-      if (!iframe || !iframe.contentWindow || !iframe.contentDocument) {
-        alert("Chưa có nội dung để tải. Vui lòng chờ tải xong.");
-        return;
-      }
-      const htmlContent = iframe.contentDocument.documentElement.outerHTML;
-      const blob = new Blob([htmlContent], { type: "text/html" });
-      const url  = URL.createObjectURL(blob);
-      const win  = window.open(url, '_blank');
-      if (win) win.onload = () => { win.focus(); setTimeout(() => win.print(), 500); };
-      else alert("Vui lòng cho phép pop-up để tải PDF.");
-    }
+      const buildQrUrl = (value) =>
+        `https://quickchart.io/qr?size=200&text=${encodeURIComponent(value)}`;
 
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(console.warn);
+      const cryptoId = () => {
+        if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+        return `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      };
+
+      const extractSerials = (payload) => {
+        if (!payload) return [];
+        const strings = [];
+        const collect = (value) => {
+          if (Array.isArray(value)) {
+            value.forEach((entry) => {
+              if (typeof entry === 'string') {
+                strings.push(entry);
+              } else if (entry && typeof entry === 'object') {
+                collect(entry.serials);
+                collect(entry.hashes);
+              }
+            });
+          } else if (typeof value === 'string') {
+            strings.push(value);
+          } else if (value && typeof value === 'object') {
+            collect(value.serials);
+            collect(value.hashes);
+          }
+        };
+        collect(payload);
+        return strings.filter(Boolean);
+      };
+
+      const sendWebhook = async () => {
+        if (!validateAllRows()) {
+          setStatus('error', 'Có dòng chưa hợp lệ, vui lòng kiểm tra lại.');
+          return;
+        }
+        const payloadItems = state.items.map(({ code, size, qty }) => ({ code, size, qty }));
+        const hadLayoutBeforeSend = state.layoutReady;
+        state.layoutReady = false;
+        hidePrintButton();
+        state.loading = true;
+        updateButtons();
+        setStatus('info', 'Đang gửi webhook...');
+        try {
+          const res = await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: payloadItems })
+          });
+
+          if (!res.ok) {
+            const text = await res.text();
+            throw new Error(text || `Webhook trả về mã lỗi ${res.status}`);
+          }
+
+          const data = await res.json();
+          const hashes = extractSerials(data);
+          if (!hashes.length) {
+            throw new Error('Webhook không trả về danh sách serials/hashes hợp lệ.');
+          }
+
+          state.hashes = hashes;
+          buildLayout();
+        } catch (error) {
+          console.error(error);
+          setStatus('error', error.message || 'Gửi webhook thất bại.');
+          if (hadLayoutBeforeSend && state.hashes.length) {
+            state.layoutReady = true;
+            showPrintButton();
+          }
+        } finally {
+          state.loading = false;
+          updateButtons();
+        }
+      };
+
+      const parseHashes = () => {
+        const normalized = [];
+        state.hashes.forEach((entry) => {
+          if (typeof entry !== 'string') return;
+          const parts = entry.split('-');
+          const code = (parts.shift() || '').toUpperCase();
+          const size = (parts.shift() || '').toUpperCase();
+          const hash = (parts.join('-') || '').toUpperCase();
+          if (!code || !size) return;
+          const qrValue = hash ? `${code}-${size}-${hash}` : `${code}-${size}`;
+          normalized.push({ code, size, hash, value: qrValue });
+        });
+        return normalized;
+      };
+
+      const chunkLabels = (labels) => {
+        const pages = [];
+        for (let i = 0; i < labels.length; i += 3) {
+          pages.push(labels.slice(i, i + 3));
+        }
+        if (pages.length) {
+          const lastPage = pages[pages.length - 1];
+          while (lastPage.length < 3) {
+            lastPage.push({ blank: true });
+          }
+        }
+        return pages;
+      };
+
+      const renderPages = (container, pages) => {
+        if (!pages.length) {
+          container.innerHTML = '<div class="empty-state">Chưa có bản dàn tem.</div>';
+          return;
+        }
+
+        const pageHtml = pages.map((labels, pageIndex) => {
+          const cells = labels.map((label) => {
+            if (label.blank) {
+              return '<div class="label-cell is-blank"><span>Tem trống</span></div>';
+            }
+            return `
+              <div class="label-cell">
+                <div class="label-qr" data-qr="${label.value}">
+                  <img alt="QR ${label.value}">
+                  <span class="qr-fallback">QR lỗi</span>
+                </div>
+                <div class="label-text">
+                  <span class="code">${label.code}</span>
+                  <span class="size">${label.size}</span>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          return `<div class="label-page" data-page="Trang ${pageIndex + 1}">${cells}</div>`;
+        }).join('');
+
+        container.innerHTML = pageHtml;
+        renderQrCodes(container);
+      };
+
+      const renderQrCodes = (container) => {
+        const targets = container.querySelectorAll('.label-qr[data-qr]');
+        targets.forEach((node) => {
+          const value = node.dataset.qr;
+          const img = node.querySelector('img');
+          if (!value || !img) return;
+          node.classList.remove('qr-missing');
+          img.src = buildQrUrl(value);
+          img.alt = `QR ${value}`;
+          img.onload = () => {
+            node.classList.remove('qr-missing');
+          };
+          img.onerror = () => {
+            node.classList.add('qr-missing');
+          };
+        });
+      };
+
+      const buildLayout = () => {
+        if (!state.hashes.length) {
+          setStatus('error', 'Chưa có dữ liệu hashes. Hãy nhấn “Gửi” trước.');
+          return;
+        }
+
+        const labels = parseHashes();
+        const pages = chunkLabels(labels);
+        renderPages(els.layoutPreview, pages);
+        renderPages(els.printArea, pages);
+        state.layoutReady = true;
+        showPrintButton();
+        setStatus('success', `Đã dàn ${labels.length} tem thành ${pages.length} trang.`);
+      };
+
+      const handlePrint = () => {
+        if (!state.layoutReady) {
+          setStatus('error', 'Chưa có bản dàn tem để in.');
+          return;
+        }
+        window.print();
+      };
+
+      els.addBtn.addEventListener('click', addItem);
+      els.resetBtn.addEventListener('click', resetAll);
+      els.sendBtn.addEventListener('click', sendWebhook);
+      els.printBtn.addEventListener('click', handlePrint);
+
+      els.body.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-remove]');
+        if (button) {
+          removeItem(button.getAttribute('data-remove'));
+        }
       });
-    }
+
+      ['code', 'size', 'qty'].forEach((key) => {
+        const input = els[key];
+        input.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            addItem();
+          }
+        });
+      });
+
+      hidePrintButton();
+      updateButtons();
+    });
   </script>
 </body>
+
 </html>
