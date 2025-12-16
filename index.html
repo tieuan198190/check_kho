@@ -11,15 +11,22 @@
   <style>
     :root {
       color-scheme: light;
-      --surface: #f4f5f7;
-      --surface-tonal: #ffffff;
-      --text: #1b1d23;
-      --text-muted: #5e6270;
-      --border: #e2e5ec;
-      --accent: #1d4ed8;
-      --danger: #c0392b;
-      --success: #0f7b3a;
-      --radius: 18px;
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --surface-solid: #ffffff;
+      --text: #0b1220;
+      --text-muted: rgba(11, 18, 32, 0.62);
+      --border: rgba(15, 23, 42, 0.1);
+      --border-strong: rgba(15, 23, 42, 0.16);
+      --accent: #111827;
+      --danger: #e11d48;
+      --success: #16a34a;
+      --info: #0284c7;
+      --radius: 26px;
+      --radius-sm: 16px;
+      --shadow-sm: 0 18px 60px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 28px 90px rgba(15, 23, 42, 0.1);
+      --ring: 0 0 0 4px rgba(17, 24, 39, 0.14);
     }
 
     * {
@@ -30,9 +37,71 @@
       margin: 0;
       min-height: 100vh;
       font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--surface);
+      background: var(--bg);
       color: var(--text);
-      padding: 32px clamp(16px, 3vw, 48px);
+      padding: 24px clamp(14px, 2.6vw, 40px);
+    }
+
+    body.global-busy::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        rgba(15, 23, 42, 0) 0%,
+        rgba(15, 23, 42, 0.6) 35%,
+        rgba(15, 23, 42, 0) 70%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 0.9s linear infinite;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    ::selection {
+      background: rgba(65, 70, 81, 0.12);
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
     }
 
     h1,
@@ -49,58 +118,108 @@
     }
 
     main {
-      max-width: 1200px;
+      max-width: 1240px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
 
     .card {
-      background: var(--surface-tonal);
+      background: var(--surface);
       border-radius: var(--radius);
-      padding: 24px;
-      border: 1px solid var(--border);
+      padding: 18px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 14px 50px rgba(15, 23, 42, 0.06);
     }
 
     .page-header {
+      position: relative;
+      padding: 6px 0 22px;
+    }
+
+    .topbar {
       display: flex;
-      flex-direction: column;
-      gap: 4px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
     }
 
-    .page-header h1 {
-      font-size: clamp(1.6rem, 3vw, 2.2rem);
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
       font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      text-decoration: none;
+      user-select: none;
     }
 
-    .page-header p {
-      margin: 4px 0 0;
-      color: var(--text-muted);
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--text);
+      display: inline-block;
+    }
+
+    .topbar-nav {
+    }
+
+    .hero {
+      text-align: center;
+      padding: 64px 0 8px;
+    }
+
+    .hero-title {
+      font-size: clamp(2.6rem, 6vw, 5rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 0.98;
+      margin: 0;
+    }
+
+    .hero-subtitle {
+      margin: 14px auto 0;
+      max-width: 60ch;
+      color: rgba(11, 18, 32, 0.68);
+      font-size: 1.05rem;
     }
 
     .tab-nav {
-      margin-top: 16px;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: #f8fafc;
-      border-radius: 999px;
-      padding: 4px;
-      border: 1px solid var(--border);
+      gap: 28px;
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      border: none;
+      box-shadow: none;
       width: fit-content;
+      margin: 34px auto 0;
     }
 
     .tab-button {
       border: none;
-      border-radius: 999px;
-      padding: 10px 18px;
-      font-size: 0.95rem;
-      font-weight: 600;
+      border-radius: 0;
+      padding: 0 0 10px;
+      font-size: 1.02rem;
+      font-weight: 500;
       background: transparent;
-      color: var(--text-muted);
+      color: rgba(11, 18, 32, 0.74);
       cursor: pointer;
-      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+      transition: color 0.2s ease, opacity 0.2s ease;
+      border-bottom: 1px solid transparent;
+    }
+
+    .tab-button:hover {
+      color: rgba(11, 18, 32, 0.9);
+    }
+
+    .tab-button:focus-visible {
+      outline: none;
+      box-shadow: var(--ring);
     }
 
     .tab-nav .tab-button {
@@ -109,53 +228,77 @@
     }
 
     .tab-button[aria-selected="true"] {
-      background: #fff;
       color: var(--text);
-      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+      border-bottom-color: rgba(11, 18, 32, 0.7);
     }
 
     .tab-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+      display: grid;
+      grid-template-columns: 420px minmax(0, 1fr);
+      gap: 26px;
+      align-items: start;
+    }
+
+    .tab-panel:not([hidden]) {
+      animation: fadeUp 420ms ease both;
     }
 
     .tab-panel[hidden] {
       display: none;
     }
 
+    @media (max-width: 980px) {
+      .tab-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 44px;
+      }
+    }
+
     .input-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 16px;
-      margin-bottom: 16px;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .input-grid.input-grid-vertical {
+      grid-template-columns: 1fr;
     }
 
     label {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 500;
       color: var(--text-muted);
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
 
     input,
     select {
       width: 100%;
-      border-radius: 12px;
+      border-radius: var(--radius-sm);
       border: 1px solid var(--border);
-      padding: 14px 16px;
-      font-size: 1rem;
+      padding: 12px 14px;
+      font-size: 0.95rem;
       font-family: inherit;
-      transition: border-color 0.2s ease, background 0.2s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
       background-color: #fff;
     }
 
     input:focus,
     select:focus {
       outline: none;
-      border-color: var(--accent);
-      background-color: #fefefe;
+      border-color: rgba(109, 40, 217, 0.55);
+      background-color: rgba(255, 255, 255, 0.9);
+      box-shadow: var(--ring);
+    }
+
+    input:hover,
+    select:hover {
+      border-color: var(--border-strong);
     }
 
     table {
@@ -166,7 +309,7 @@
 
     th,
     td {
-      padding: 14px 12px;
+      padding: 10px 10px;
       border-bottom: 1px solid rgba(29, 27, 32, 0.07);
       text-align: left;
     }
@@ -176,7 +319,7 @@
       letter-spacing: 0.05em;
       color: var(--text-muted);
       text-transform: uppercase;
-      background: rgba(103, 80, 164, 0.08);
+      background: rgba(29, 78, 216, 0.05);
     }
 
     tbody tr:last-child td {
@@ -187,16 +330,20 @@
       background: rgba(220, 38, 38, 0.05);
     }
 
+    tbody tr {
+      animation: fadeUp 320ms ease both;
+    }
+
     .table-wrapper {
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 14px;
       overflow: hidden;
-      background: #fff;
+      background: rgba(255, 255, 255, 0.85);
     }
 
     .empty-state {
       text-align: center;
-      padding: 28px;
+      padding: 20px;
       color: var(--text-muted);
       font-size: 0.95rem;
     }
@@ -204,7 +351,7 @@
     .actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 10px;
     }
 
     .actions.single-action {
@@ -217,7 +364,7 @@
       gap: 6px;
       padding: 6px 14px;
       border-radius: 999px;
-      background: rgba(29, 78, 216, 0.08);
+      background: rgba(15, 23, 42, 0.06);
       color: var(--text-muted);
       font-size: 0.9rem;
     }
@@ -226,14 +373,47 @@
       font-family: inherit;
       border: none;
       border-radius: 999px;
-      padding: 12px 22px;
-      font-size: 0.95rem;
+      padding: 10px 16px;
+      font-size: 0.92rem;
       font-weight: 600;
       cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.2s ease;
+      transition: opacity 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
       display: inline-flex;
       align-items: center;
       gap: 8px;
+    }
+
+    button:hover:not(:disabled) {
+      box-shadow: none;
+    }
+
+    button:focus-visible {
+      outline: none;
+      box-shadow: var(--ring);
+    }
+
+    button.is-loading {
+      position: relative;
+      padding-right: 42px;
+    }
+
+    button.is-loading::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      width: 16px;
+      height: 16px;
+      margin-top: -8px;
+      border-radius: 999px;
+      border: 2px solid rgba(255, 255, 255, 0.55);
+      border-top-color: rgba(255, 255, 255, 0);
+      animation: spin 0.8s linear infinite;
+    }
+
+    .btn-outline.is-loading::after {
+      border-color: rgba(15, 23, 42, 0.28);
+      border-top-color: rgba(15, 23, 42, 0);
     }
 
     button:disabled {
@@ -250,18 +430,62 @@
     .btn-outline {
       background: transparent;
       color: var(--text);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(15, 23, 42, 0.22);
       box-shadow: none;
     }
 
     .status-line {
-      margin-top: 12px;
-      font-size: 0.9rem;
-      padding: 12px 14px;
-      border-radius: 14px;
+      margin-top: 10px;
+      font-size: 0.88rem;
+      padding: 10px 12px;
+      border-radius: 12px;
       border: 1px solid var(--border);
-      background: #fff;
+      background: rgba(255, 255, 255, 0.75);
       color: var(--text);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .status-line.flash {
+      animation: fadeUp 260ms ease both;
+    }
+
+    .status-line.is-busy {
+      background: linear-gradient(
+        90deg,
+        rgba(15, 23, 42, 0.04) 0%,
+        rgba(15, 23, 42, 0.08) 45%,
+        rgba(15, 23, 42, 0.04) 100%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.2s ease infinite;
+    }
+
+    .status-line.is-busy::after {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      margin-top: -7px;
+      border-radius: 999px;
+      border: 2px solid rgba(15, 23, 42, 0.16);
+      border-top-color: rgba(15, 23, 42, 0);
+      animation: spin 0.8s linear infinite;
+    }
+
+    .helper {
+      margin: 10px 0 0;
+      font-size: 0.9rem;
+      color: rgba(11, 18, 32, 0.6);
+      text-align: right;
+    }
+
+    .status-line.info {
+      background: rgba(2, 132, 199, 0.08);
+      border-color: rgba(2, 132, 199, 0.24);
+      color: var(--info);
     }
 
     .status-line.success {
@@ -281,8 +505,8 @@
       flex-wrap: wrap;
       justify-content: space-between;
       gap: 10px;
-      font-size: 0.9rem;
-      margin-bottom: 10px;
+      font-size: 0.88rem;
+      margin-bottom: 8px;
       color: var(--text-muted);
     }
 
@@ -292,19 +516,19 @@
       align-items: flex-start;
       gap: 12px;
       flex-wrap: wrap;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .layout-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
+      gap: 12px;
     }
 
     .hasize-form {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 10px;
       align-items: flex-end;
     }
 
@@ -315,29 +539,29 @@
 
     .hasize-form button {
       flex: 0 0 auto;
-      padding-inline: 28px;
+      padding-inline: 22px;
     }
 
     .hasize-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
+      gap: 12px;
     }
 
     .hasize-card {
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px;
+      padding: 14px;
       display: flex;
-      gap: 16px;
-      background: #fff;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.85);
     }
 
     .hasize-details {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .hasize-meta {
@@ -351,11 +575,11 @@
     .hasize-meta span {
       padding: 4px 10px;
       border-radius: 999px;
-      background: rgba(29, 78, 216, 0.08);
+      background: rgba(15, 23, 42, 0.06);
     }
 
     .hasize-serial {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -366,7 +590,7 @@
       padding: 0;
       margin: 0;
       color: var(--text-muted);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
 
     .hasize-info li + li {
@@ -374,8 +598,8 @@
     }
 
     .hasize-qr {
-      width: 140px;
-      min-width: 140px;
+      width: 132px;
+      min-width: 132px;
       border-left: 1px dashed rgba(15, 23, 42, 0.12);
       display: flex;
       flex-direction: column;
@@ -398,6 +622,53 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+    }
+
+    [data-busy="true"] {
+      position: relative;
+    }
+
+    [data-busy="true"]::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(2px);
+      border-radius: inherit;
+    }
+
+    [data-busy="true"]::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 18px;
+      height: 18px;
+      margin-left: -9px;
+      margin-top: -9px;
+      border-radius: 999px;
+      border: 2px solid rgba(15, 23, 42, 0.18);
+      border-top-color: rgba(15, 23, 42, 0);
+      animation: spin 0.8s linear infinite;
+      z-index: 1;
+    }
+
+    [data-busy="true"] > * {
+      opacity: 0.55;
+    }
+
+    .skeleton-card {
+      border-radius: var(--radius);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      min-height: 98px;
+      background: linear-gradient(
+        90deg,
+        rgba(15, 23, 42, 0.04) 0%,
+        rgba(15, 23, 42, 0.08) 40%,
+        rgba(15, 23, 42, 0.04) 80%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.2s ease infinite;
     }
 
 
@@ -520,7 +791,11 @@
 
     @media (max-width: 720px) {
       body {
-        padding: 16px;
+        padding: 14px;
+      }
+
+      .hero-subtitle {
+        font-size: 0.95rem;
       }
 
       .actions {
@@ -584,10 +859,18 @@
 
 <body>
   <main>
-    <header class="card page-header">
-      <div>
-        <h1>In tem - Cô Mập Fashion</h1>
+    <header class="page-header">
+      <div class="topbar">
+        <a class="brand" href="#" aria-label="Trang chủ">
+          <span class="brand-dot" aria-hidden="true"></span>
+          <span>Cô Mập Fashion</span>
+        </a>
       </div>
+
+      <div class="hero">
+        <h1 class="hero-title" id="heroTitle">In tem</h1>
+      </div>
+
       <div class="tab-nav" role="tablist">
         <button class="tab-button" id="tab-trigger-labels" type="button" role="tab" aria-controls="tab-labels" aria-selected="true"
           data-tab-target="labels">In tem</button>
@@ -599,7 +882,7 @@
     <section class="tab-panel" data-tab-panel="labels" id="tab-labels">
       <section class="card">
         <h2>Nhập dòng hàng</h2>
-        <div class="input-grid">
+        <div class="input-grid input-grid-vertical">
           <div>
             <label for="codeInput">Mã</label>
             <input type="text" id="codeInput" placeholder="Ví dụ: A123" autocomplete="off">
@@ -624,7 +907,7 @@
           <button class="btn-primary" id="addItemBtn">Thêm dòng</button>
           <button class="btn-outline" id="resetBtn" type="button">Reset</button>
         </div>
-        <div id="formMessage" class="status-line info" role="status">Nhập thông tin &amp; nhấn “Thêm dòng”.</div>
+        <div id="formMessage" class="status-line info" role="status" hidden></div>
       </section>
 
       <section class="card">
@@ -654,10 +937,11 @@
         <div class="actions single-action">
           <button class="btn-primary" id="sendWebhookBtn" disabled>Gửi</button>
         </div>
-        <div id="statusBox" class="status-line info">Nhấn “Gửi” sau khi thêm đầy đủ dòng.</div>
+        <p id="sendHint" class="helper" hidden>Nhấn “Gửi” sau khi thêm đầy đủ dòng.</p>
+        <div id="statusBox" class="status-line info" hidden></div>
       </section>
 
-      <section class="card">
+      <section class="card" id="layoutSection" hidden>
         <div class="layout-header">
           <div>
             <h2>Bản dàn tem</h2>
@@ -738,6 +1022,10 @@
         sendBtn: document.getElementById('sendWebhookBtn'),
         printBtn: document.getElementById('printBtn'),
         statusBox: document.getElementById('statusBox'),
+        sendHint: document.getElementById('sendHint'),
+        heroTitle: document.getElementById('heroTitle'),
+        heroSubtitle: document.getElementById('heroSubtitle'),
+        layoutSection: document.getElementById('layoutSection'),
         layoutPreview: document.getElementById('layoutPreview'),
         printArea: document.getElementById('printArea'),
         tabButtons: document.querySelectorAll('[data-tab-target]'),
@@ -753,6 +1041,16 @@
 
       const hasizeSubmitLabel = els.hasizeSubmit?.textContent || 'Tạo QR hạ size';
       const DEFAULT_TAB = 'labels';
+      const HERO_COPY = {
+        labels: {
+          title: 'In tem',
+          subtitle: 'Tạo QR, in tem và hạ size nhanh — tập trung vào thao tác, tối giản và rõ ràng.'
+        },
+        hasize: {
+          title: 'Hạ size',
+          subtitle: 'Quét serial để tạo QR hạ size mới — nhanh, gọn và dễ kiểm soát.'
+        }
+      };
 
       const renderTable = () => {
         if (!state.items.length) {
@@ -764,7 +1062,7 @@
         const rows = state.items.map((item, index) => {
           const note = item.error ? `<span style="color: var(--danger);">${item.error}</span>` : '—';
           return `
-            <tr data-id="${item.id}" class="${item.error ? 'has-error' : ''}">
+            <tr data-id="${item.id}" class="${item.error ? 'has-error' : ''}" style="animation-delay:${Math.min(index, 10) * 28}ms">
               <td>${index + 1}</td>
               <td>${item.code}</td>
               <td>${item.size}</td>
@@ -786,25 +1084,86 @@
         els.qtyCounter.textContent = `${qtyTotal} tem`;
       };
 
+      const flash = (element) => {
+        if (!element) return;
+        element.classList.remove('flash');
+        void element.offsetWidth;
+        element.classList.add('flash');
+        window.setTimeout(() => element.classList.remove('flash'), 320);
+      };
+
+      const setHidden = (element, hidden) => {
+        if (!element) return;
+        if (hidden) element.setAttribute('hidden', '');
+        else element.removeAttribute('hidden');
+      };
+
+      const setBusyStatus = (element, busy) => {
+        if (!element) return;
+        element.classList.toggle('is-busy', Boolean(busy));
+        element.setAttribute('aria-busy', String(Boolean(busy)));
+        if (busy) setHidden(element, false);
+      };
+
+      const setBusy = (element, busy) => {
+        if (!element) return;
+        if (busy) {
+          element.setAttribute('data-busy', 'true');
+          element.setAttribute('aria-busy', 'true');
+        } else {
+          element.removeAttribute('data-busy');
+          element.removeAttribute('aria-busy');
+        }
+      };
+
+      const buildSkeletonGrid = (count = 6) => {
+        const safeCount = Math.max(1, Math.min(12, Number(count) || 6));
+        return Array.from({ length: safeCount }, () => '<div class="skeleton-card" aria-hidden="true"></div>').join('');
+      };
+
+      const updateGlobalBusy = () => {
+        document.body.classList.toggle('global-busy', state.loading || hasizeState.loading);
+      };
+
       const setStatus = (type, message) => {
+        if (!els.statusBox) return;
+        const hasMessage = Boolean(message && String(message).trim());
+        setHidden(els.statusBox, !hasMessage);
+        if (!hasMessage) return;
         els.statusBox.textContent = message;
         els.statusBox.className = `status-line ${type}`;
+        flash(els.statusBox);
       };
 
       const setFormMessage = (type, message) => {
+        if (!els.formMessage) return;
+        const hasMessage = Boolean(message && String(message).trim());
+        setHidden(els.formMessage, !hasMessage);
+        if (!hasMessage) return;
         els.formMessage.textContent = message;
         els.formMessage.className = `status-line ${type}`;
+        flash(els.formMessage);
+        if (type !== 'error') {
+          window.setTimeout(() => {
+            if (els.formMessage?.textContent === message) setHidden(els.formMessage, true);
+          }, 900);
+        }
       };
 
       const setHasizeStatus = (type, message) => {
         if (!els.hasizeStatus) return;
         els.hasizeStatus.textContent = message;
         els.hasizeStatus.className = `status-line ${type}`;
+        flash(els.hasizeStatus);
       };
 
       const updateButtons = () => {
         const hasItems = state.items.length > 0;
         els.sendBtn.disabled = !hasItems || state.loading;
+        els.sendBtn.classList.toggle('is-loading', state.loading);
+        els.sendBtn.setAttribute('aria-busy', String(Boolean(state.loading)));
+        setHidden(els.sendHint, !hasItems || state.loading);
+        updateGlobalBusy();
       };
 
       const updateHasizePrintButton = () => {
@@ -822,15 +1181,22 @@
         if (els.hasizeSubmit) {
           els.hasizeSubmit.disabled = hasizeState.loading;
           els.hasizeSubmit.textContent = hasizeState.loading ? 'Đang tạo...' : hasizeSubmitLabel;
+          els.hasizeSubmit.classList.toggle('is-loading', hasizeState.loading);
+          els.hasizeSubmit.setAttribute('aria-busy', String(Boolean(hasizeState.loading)));
         }
         if (els.hasizeClear) {
           const disableClear = hasizeState.loading || hasizeState.entries.length === 0;
           els.hasizeClear.disabled = disableClear;
         }
         updateHasizePrintButton();
+        updateGlobalBusy();
       };
 
       const activateTab = (tabName = DEFAULT_TAB) => {
+        const hero = HERO_COPY[tabName] || HERO_COPY[DEFAULT_TAB];
+        if (els.heroTitle) els.heroTitle.textContent = hero.title;
+        if (els.heroSubtitle) els.heroSubtitle.textContent = hero.subtitle;
+
         if (els.tabButtons?.forEach) {
           els.tabButtons.forEach((button) => {
             const isActive = button.dataset.tabTarget === tabName;
@@ -871,13 +1237,14 @@
         state.layoutReady = false;
         state.loading = false;
         renderTable();
-        els.layoutPreview.innerHTML = '<div class="empty-state">Chưa có dữ liệu hashes. Hãy nhấn “Gửi” để nhận tem.</div>';
+        els.layoutPreview.innerHTML = '<div class="empty-state">Hãy nhấn “Gửi” để nhận tem.</div>';
         els.printArea.innerHTML = '';
         labelPrintHTML = '';
+        els.layoutSection?.setAttribute('hidden', '');
         hidePrintButton();
         resetForm();
-        setStatus('info', 'Đã reset toàn bộ dữ liệu.');
-        setFormMessage('info', 'Nhập thông tin & nhấn “Thêm dòng”.');
+        setStatus('', '');
+        setFormMessage('', '');
         updateButtons();
       };
 
@@ -978,7 +1345,7 @@
       const getHasizeQrValue = (entry) => entry.serial || [entry.sku, entry.size, entry.hash].filter(Boolean).join('-');
 
       const buildHasizeCardHtml = (entry, options = {}) => {
-        const { lazy = true } = options;
+        const { lazy = true, index = 0 } = options;
         const qrValue = getHasizeQrValue(entry);
         const sku = entry.sku || '—';
         const sizeText = entry.size || '—';
@@ -986,7 +1353,7 @@
         const metaHtml = metaParts.map((text) => `<span>${text}</span>`).join('');
         const loadingAttr = lazy ? ' loading="lazy"' : '';
         return `
-            <article class="hasize-card">
+            <article class="hasize-card" style="animation-delay:${Math.min(index, 10) * 36}ms">
               <div class="hasize-details">
                 <div class="hasize-meta">${metaHtml}</div>
               </div>
@@ -1020,7 +1387,7 @@
           return;
         }
 
-        const cards = hasizeState.entries.map((entry) => buildHasizeCardHtml(entry)).join('');
+        const cards = hasizeState.entries.map((entry, index) => buildHasizeCardHtml(entry, { index })).join('');
 
         els.hasizeResults.innerHTML = cards;
         updateHasizePrintButton();
@@ -1131,6 +1498,8 @@
         hasizeState.loading = true;
         updateHasizeControls();
         setHasizeStatus('info', 'Đang tạo QR hạ size...');
+        setBusyStatus(els.hasizeStatus, true);
+        setBusy(els.hasizeResults, true);
 
         try {
           const response = await fetch(HASIZE_WEBHOOK_URL, {
@@ -1165,6 +1534,8 @@
         } finally {
           hasizeState.loading = false;
           updateHasizeControls();
+          setBusyStatus(els.hasizeStatus, false);
+          setBusy(els.hasizeResults, false);
         }
       };
 
@@ -1204,6 +1575,9 @@
         state.loading = true;
         updateButtons();
         setStatus('info', 'Đang gửi webhook...');
+        setBusyStatus(els.statusBox, true);
+        els.layoutSection?.removeAttribute('hidden');
+        els.layoutPreview.innerHTML = buildSkeletonGrid(6);
         try {
           const res = await fetch(WEBHOOK_URL, {
             method: 'POST',
@@ -1230,10 +1604,14 @@
           if (hadLayoutBeforeSend && state.hashes.length) {
             state.layoutReady = true;
             showPrintButton();
+            els.layoutSection?.removeAttribute('hidden');
+          } else {
+            els.layoutSection?.setAttribute('hidden', '');
           }
         } finally {
           state.loading = false;
           updateButtons();
+          setBusyStatus(els.statusBox, false);
         }
       };
 
@@ -1311,6 +1689,7 @@
           return;
         }
 
+        els.layoutSection?.removeAttribute('hidden');
         const labels = parseHashes();
         const pages = chunkLabels(labels);
         renderPages(els.layoutPreview, pages);
