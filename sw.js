@@ -4,12 +4,10 @@ const urlsToCache = [
   '/index.html'
 ];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
-  );
+self.addEventListener('fetch', (event) => {
+  return;
 });
+
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
