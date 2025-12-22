@@ -989,7 +989,38 @@
   <!-- Vùng chỉ dùng cho in -->
   <section id="printArea" aria-hidden="true"></section>
 
-  <script src="vendor/qrcode.min.js"></script>
+  <script src="vendor/qrcode-generator.min.js"></script>
+  <script>
+    // Polyfill API for code below: QRCode.toDataURL(text, { width, margin, errorCorrectionLevel })
+    // Uses https://github.com/kazuhikoarase/qrcode-generator (exposed as global `qrcode`).
+    (() => {
+      if (window.QRCode?.toDataURL) return;
+      if (typeof window.qrcode !== 'function') return;
+
+      window.QRCode = window.QRCode || {};
+      window.QRCode.toDataURL = (text, options = {}) =>
+        new Promise((resolve, reject) => {
+          try {
+            const value = String(text ?? '').trim();
+            if (!value) return resolve('');
+
+            const ecl = String(options.errorCorrectionLevel || 'M').toUpperCase();
+            const width = Math.max(64, Number(options.width) || 160);
+            const margin = Math.max(0, Math.min(12, Number(options.margin) || 2));
+
+            const qr = window.qrcode(0, ecl);
+            qr.addData(value);
+            qr.make();
+
+            const moduleCount = qr.getModuleCount();
+            const cellSize = Math.max(1, Math.floor(width / (moduleCount + margin * 2)));
+            resolve(qr.createDataURL(cellSize, margin));
+          } catch (err) {
+            reject(err);
+          }
+        });
+    })();
+  </script>
   <script>
     window.addEventListener('DOMContentLoaded', () => {
       const WEBHOOK_URL = 'https://n8n-hongnhung198198-u40833.vm.elestio.app/webhook/import-items';
