@@ -675,7 +675,7 @@
     .label-page {
       width: 105mm;
       max-width: 100%;
-      height: 22mm;
+      height: 20mm;
       border: 1px solid var(--border);
       border-radius: 10px;
       background: #fff;
@@ -700,10 +700,10 @@
       max-width: calc(100% / 3);
       border-right: 1px dashed rgba(15, 23, 42, 0.15);
       display: flex;
-      gap: 6px;
-      padding: 2mm 2mm 2mm 2.5mm;
+      gap: 3px;
+      padding: 0 1mm;
       align-items: center;
-      height: 22mm;
+      height: 20mm;
     }
 
     .label-cell:last-child {
@@ -719,9 +719,9 @@
     }
 
     .label-qr {
-      width: 20mm;
-      min-width: 20mm;
-      height: 22mm;
+      width: 19mm;
+      min-width: 19mm;
+      height: 20mm;
       display: grid;
       place-items: center;
       background: #fff;
@@ -731,8 +731,8 @@
     }
 
     .label-qr img {
-      width: 20mm;
-      height: 20mm;
+      width: 19mm;
+      height: 19mm;
       object-fit: contain;
     }
 
@@ -743,7 +743,7 @@
       font-size: 0.65rem;
       color: var(--danger);
       text-align: center;
-      line-height: 22mm;
+      line-height: 20mm;
       background: repeating-linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0 6px, rgba(255, 255, 255, 0.5) 6px 12px);
     }
 
@@ -757,8 +757,9 @@
       justify-content: center;
       line-height: 1.25;
       font-size: 0.78rem;
-      width: 15mm;
-      height: 22mm;
+      flex: 1;
+      width: auto;
+      height: 20mm;
     }
 
     .label-text .code {
@@ -826,7 +827,7 @@
     }
 
     @page {
-      size: 105mm 22mm;
+      size: 105mm 20mm;
       margin: 0;
     }
 
@@ -1312,7 +1313,7 @@
       };
 
       const buildQrUrl = (value) =>
-        `https://quickchart.io/qr?size=200&text=${encodeURIComponent(value)}`;
+        `https://quickchart.io/qr?size=200&margin=1&text=${encodeURIComponent(value)}`;
 
       const cryptoId = () => {
         if (window.crypto?.randomUUID) return window.crypto.randomUUID();
