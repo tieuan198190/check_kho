@@ -989,38 +989,6 @@
   <!-- Vùng chỉ dùng cho in -->
   <section id="printArea" aria-hidden="true"></section>
 
-  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
-  <script>
-    // Polyfill API for code below: QRCode.toDataURL(text, { width, margin, errorCorrectionLevel })
-    // Uses https://github.com/kazuhikoarase/qrcode-generator (exposed as global `qrcode`).
-    (() => {
-      if (window.QRCode?.toDataURL) return;
-      if (typeof window.qrcode !== 'function') return;
-
-      window.QRCode = window.QRCode || {};
-      window.QRCode.toDataURL = (text, options = {}) =>
-        new Promise((resolve, reject) => {
-          try {
-            const value = String(text ?? '').trim();
-            if (!value) return resolve('');
-
-            const ecl = String(options.errorCorrectionLevel || 'M').toUpperCase();
-            const width = Math.max(64, Number(options.width) || 160);
-            const margin = Math.max(0, Math.min(12, Number(options.margin) || 2));
-
-            const qr = window.qrcode(0, ecl);
-            qr.addData(value);
-            qr.make();
-
-            const moduleCount = qr.getModuleCount();
-            const cellSize = Math.max(1, Math.floor(width / (moduleCount + margin * 2)));
-            resolve(qr.createDataURL(cellSize, margin));
-          } catch (err) {
-            reject(err);
-          }
-        });
-    })();
-  </script>
   <script>
     window.addEventListener('DOMContentLoaded', () => {
       const WEBHOOK_URL = 'https://n8n-hongnhung198198-u40833.vm.elestio.app/webhook/import-items';
@@ -1343,30 +1311,8 @@
         return !hasError;
       };
 
-      const QR_PRINT_MM = 20;
-      const QR_RENDER_DPI = 300;
-      const QR_RENDER_PX = Math.max(160, Math.round((QR_PRINT_MM / 25.4) * QR_RENDER_DPI));
-      const qrDataUrlCache = new Map();
-
-      const getQrDataUrl = async (value) => {
-        const normalized = (value || '').trim();
-        if (!normalized) return '';
-        if (qrDataUrlCache.has(normalized)) return qrDataUrlCache.get(normalized);
-
-        if (!window.QRCode?.toDataURL) {
-          throw new Error('Thiếu thư viện tạo QR (QRCode.toDataURL).');
-        }
-
-        const promise = window.QRCode.toDataURL(normalized, {
-          errorCorrectionLevel: 'M',
-          width: QR_RENDER_PX,
-          margin: 2,
-          color: { dark: '#000000', light: '#ffffff' }
-        });
-
-        qrDataUrlCache.set(normalized, promise);
-        return promise;
-      };
+      const buildQrUrl = (value) =>
+        `https://quickchart.io/qr?size=200&text=${encodeURIComponent(value)}`;
 
       const cryptoId = () => {
         if (window.crypto?.randomUUID) return window.crypto.randomUUID();
@@ -1411,8 +1357,8 @@
               <div class="hasize-details">
                 <div class="hasize-meta">${metaHtml}</div>
               </div>
-              <div class="hasize-qr" data-qr="${qrValue}">
-                <img alt="QR hạ size" ${loadingAttr}>
+              <div class="hasize-qr">
+                <img src="${buildQrUrl(qrValue)}" alt="QR hạ size" ${loadingAttr}>
                 <span>Quét để hạ size</span>
               </div>
             </article>
@@ -1444,7 +1390,6 @@
         const cards = hasizeState.entries.map((entry, index) => buildHasizeCardHtml(entry, { index })).join('');
 
         els.hasizeResults.innerHTML = cards;
-        renderQrCodes(els.hasizeResults);
         updateHasizePrintButton();
       };
 
@@ -1506,7 +1451,6 @@
       const restoreLabelPrintArea = () => {
         if (state.layoutReady && labelPrintHTML) {
           els.printArea.innerHTML = labelPrintHTML;
-          renderQrCodes(els.printArea);
           return;
         }
         if (!state.layoutReady) {
@@ -1722,22 +1666,20 @@
       };
 
       const renderQrCodes = (container) => {
-        if (!container) return;
-        const targets = container.querySelectorAll('.label-qr[data-qr], .hasize-qr[data-qr]');
-        targets.forEach(async (node) => {
+        const targets = container.querySelectorAll('.label-qr[data-qr]');
+        targets.forEach((node) => {
           const value = node.dataset.qr;
           const img = node.querySelector('img');
           if (!value || !img) return;
           node.classList.remove('qr-missing');
+          img.src = buildQrUrl(value);
           img.alt = `QR ${value}`;
-          try {
-            img.src = await getQrDataUrl(value);
+          img.onload = () => {
             node.classList.remove('qr-missing');
-          } catch (error) {
-            console.error(error);
+          };
+          img.onerror = () => {
             node.classList.add('qr-missing');
-            img.removeAttribute('src');
-          }
+          };
         });
       };
 
