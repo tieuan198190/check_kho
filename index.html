@@ -989,6 +989,7 @@
   <!-- Vùng chỉ dùng cho in -->
   <section id="printArea" aria-hidden="true"></section>
 
+  <script src="vendor/qrcode.min.js"></script>
   <script>
     window.addEventListener('DOMContentLoaded', () => {
       const WEBHOOK_URL = 'https://n8n-hongnhung198198-u40833.vm.elestio.app/webhook/import-items';
@@ -1311,8 +1312,30 @@
         return !hasError;
       };
 
-      const buildQrUrl = (value) =>
-        `https://quickchart.io/qr?size=200&text=${encodeURIComponent(value)}`;
+      const QR_PRINT_MM = 20;
+      const QR_RENDER_DPI = 300;
+      const QR_RENDER_PX = Math.max(160, Math.round((QR_PRINT_MM / 25.4) * QR_RENDER_DPI));
+      const qrDataUrlCache = new Map();
+
+      const getQrDataUrl = async (value) => {
+        const normalized = (value || '').trim();
+        if (!normalized) return '';
+        if (qrDataUrlCache.has(normalized)) return qrDataUrlCache.get(normalized);
+
+        if (!window.QRCode?.toDataURL) {
+          throw new Error('Thiếu thư viện tạo QR (QRCode.toDataURL).');
+        }
+
+        const promise = window.QRCode.toDataURL(normalized, {
+          errorCorrectionLevel: 'M',
+          width: QR_RENDER_PX,
+          margin: 2,
+          color: { dark: '#000000', light: '#ffffff' }
+        });
+
+        qrDataUrlCache.set(normalized, promise);
+        return promise;
+      };
 
       const cryptoId = () => {
         if (window.crypto?.randomUUID) return window.crypto.randomUUID();
@@ -1357,8 +1380,8 @@
               <div class="hasize-details">
                 <div class="hasize-meta">${metaHtml}</div>
               </div>
-              <div class="hasize-qr">
-                <img src="${buildQrUrl(qrValue)}" alt="QR hạ size" ${loadingAttr}>
+              <div class="hasize-qr" data-qr="${qrValue}">
+                <img alt="QR hạ size" ${loadingAttr}>
                 <span>Quét để hạ size</span>
               </div>
             </article>
@@ -1390,6 +1413,7 @@
         const cards = hasizeState.entries.map((entry, index) => buildHasizeCardHtml(entry, { index })).join('');
 
         els.hasizeResults.innerHTML = cards;
+        renderQrCodes(els.hasizeResults);
         updateHasizePrintButton();
       };
 
@@ -1451,6 +1475,7 @@
       const restoreLabelPrintArea = () => {
         if (state.layoutReady && labelPrintHTML) {
           els.printArea.innerHTML = labelPrintHTML;
+          renderQrCodes(els.printArea);
           return;
         }
         if (!state.layoutReady) {
@@ -1666,20 +1691,22 @@
       };
 
       const renderQrCodes = (container) => {
-        const targets = container.querySelectorAll('.label-qr[data-qr]');
-        targets.forEach((node) => {
+        if (!container) return;
+        const targets = container.querySelectorAll('.label-qr[data-qr], .hasize-qr[data-qr]');
+        targets.forEach(async (node) => {
           const value = node.dataset.qr;
           const img = node.querySelector('img');
           if (!value || !img) return;
           node.classList.remove('qr-missing');
-          img.src = buildQrUrl(value);
           img.alt = `QR ${value}`;
-          img.onload = () => {
+          try {
+            img.src = await getQrDataUrl(value);
             node.classList.remove('qr-missing');
-          };
-          img.onerror = () => {
+          } catch (error) {
+            console.error(error);
             node.classList.add('qr-missing');
-          };
+            img.removeAttribute('src');
+          }
         });
       };
 
