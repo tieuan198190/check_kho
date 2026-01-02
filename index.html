@@ -675,7 +675,7 @@
     .label-page {
       width: 105mm;
       max-width: 100%;
-      height: 20mm;
+      height: 22mm;
       border: 1px solid var(--border);
       border-radius: 10px;
       background: #fff;
@@ -700,10 +700,11 @@
       max-width: calc(100% / 3);
       border-right: 1px dashed rgba(15, 23, 42, 0.15);
       display: flex;
-      gap: 3px;
+      gap: 0;
       padding: 0 1mm;
       align-items: center;
-      height: 20mm;
+      height: 22mm;
+      overflow: hidden;
     }
 
     .label-cell:last-child {
@@ -719,20 +720,21 @@
     }
 
     .label-qr {
-      width: 19mm;
-      min-width: 19mm;
-      height: 20mm;
+      width: 22mm;
+      min-width: 22mm;
+      height: 22mm;
       display: grid;
       place-items: center;
       background: #fff;
-      border-right: 1px solid rgba(15, 23, 42, 0.08);
+      border-left: 1px solid rgba(15, 23, 42, 0.14);
       position: relative;
       padding: 0;
+      flex: 0 0 22mm;
     }
 
     .label-qr img {
-      width: 19mm;
-      height: 19mm;
+      width: 22mm;
+      height: 22mm;
       object-fit: contain;
     }
 
@@ -755,24 +757,38 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+      align-items: center;
       line-height: 1.25;
       font-size: 0.78rem;
-      flex: 1;
+      flex: 1 1 0;
+      min-width: 0;
       width: auto;
-      height: 20mm;
+      height: 22mm;
+      padding: 0 1mm;
+      font-family: sans-serif;
+      text-align: center;
     }
 
     .label-text .code {
       font-weight: 700;
-      font-size: 0.9rem;
-      letter-spacing: 0.04em;
+      font-size: 1.05rem;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
+      display: block;
+      padding-bottom: 1.2mm;
+      margin-bottom: 1mm;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.2);
     }
 
     .label-text .size {
       text-transform: uppercase;
-      font-weight: 600;
-      font-size: 0.78rem;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+    }
+
+    .label-text .size::before {
+      content: '';
     }
 
     #printArea {
@@ -827,7 +843,7 @@
     }
 
     @page {
-      size: 105mm 20mm;
+      size: 105mm 22mm;
       margin: 0;
     }
 
@@ -1434,13 +1450,13 @@
             const qrValue = label.value || '';
             return `
               <div class="label-cell">
-                <div class="label-qr" data-qr="${qrValue}">
-                  <img alt="QR ${qrValue}">
-                  <span class="qr-fallback">QR lỗi</span>
-                </div>
                 <div class="label-text">
                   <span class="code">${sku}</span>
                   <span class="size">${sizeText}</span>
+                </div>
+                <div class="label-qr" data-qr="${qrValue}">
+                  <img alt="QR ${qrValue}">
+                  <span class="qr-fallback">QR lỗi</span>
                 </div>
               </div>
             `;
@@ -1644,13 +1660,13 @@
             }
             return `
               <div class="label-cell">
-                <div class="label-qr" data-qr="${label.value}">
-                  <img alt="QR ${label.value}">
-                  <span class="qr-fallback">QR lỗi</span>
-                </div>
                 <div class="label-text">
                   <span class="code">${label.code}</span>
                   <span class="size">${label.size}</span>
+                </div>
+                <div class="label-qr" data-qr="${label.value}">
+                  <img alt="QR ${label.value}">
+                  <span class="qr-fallback">QR lỗi</span>
                 </div>
               </div>
             `;
