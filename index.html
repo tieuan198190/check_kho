@@ -7,7 +7,7 @@
   <title>In tem - Cô Mập Fashion</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Patrick+Hand&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: light;
@@ -701,10 +701,9 @@
       border-right: 1px dashed rgba(15, 23, 42, 0.15);
       display: flex;
       gap: 0;
-      padding: 0 1mm;
+      padding: 0;
       align-items: center;
       height: 22mm;
-      overflow: hidden;
     }
 
     .label-cell:last-child {
@@ -720,21 +719,20 @@
     }
 
     .label-qr {
-      width: 22mm;
-      min-width: 22mm;
+      width: 20mm;
+      min-width: 20mm;
       height: 22mm;
       display: grid;
       place-items: center;
       background: #fff;
-      border-left: 1px solid rgba(15, 23, 42, 0.14);
+      border-right: 1px solid rgba(15, 23, 42, 0.08);
       position: relative;
       padding: 0;
-      flex: 0 0 22mm;
     }
 
     .label-qr img {
-      width: 22mm;
-      height: 22mm;
+      width: 20mm;
+      height: 20mm;
       object-fit: contain;
     }
 
@@ -745,7 +743,7 @@
       font-size: 0.65rem;
       color: var(--danger);
       text-align: center;
-      line-height: 20mm;
+      line-height: 22mm;
       background: repeating-linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0 6px, rgba(255, 255, 255, 0.5) 6px 12px);
     }
 
@@ -756,39 +754,62 @@
     .label-text {
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      gap: 2px;
+      justify-content: center;
       line-height: 1.25;
       font-size: 0.78rem;
-      flex: 1 1 0;
-      min-width: 0;
-      width: auto;
+      flex: 0 0 15mm;
+      width: 15mm;
+      max-width: 15mm;
       height: 22mm;
-      padding: 0 1mm;
-      font-family: sans-serif;
-      text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .label-text-rotate {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      transform: rotate(90deg);
+      transform-origin: center;
+      white-space: nowrap;
+    }
+
+    .label-text-rotate > * {
+      margin: 0;
+      padding: 0;
+      line-height: 0.8;
+    }
+
+    .label-text-rotate .sep {
+      font-size: 0.9em;
+      line-height: 0.6;
+      margin: -0.4mm 0;
     }
 
     .label-text .code {
+      font-family: 'Patrick Hand', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       font-weight: 700;
-      font-size: 1.05rem;
-      letter-spacing: 0.05em;
+      font-size: 1.08rem;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
       display: block;
-      padding-bottom: 1.2mm;
-      margin-bottom: 1mm;
-      border-bottom: 1px solid rgba(15, 23, 42, 0.2);
+      line-height: 1;
     }
 
     .label-text .size {
+      font-family: 'Patrick Hand', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       text-transform: uppercase;
-      font-weight: 700;
-      font-size: 0.82rem;
-      letter-spacing: 0.05em;
-    }
-
-    .label-text .size::before {
-      content: '';
+      font-weight: 600;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      display: block;
+      line-height: 1;
     }
 
     #printArea {
@@ -1450,13 +1471,16 @@
             const qrValue = label.value || '';
             return `
               <div class="label-cell">
-                <div class="label-text">
-                  <span class="code">${sku}</span>
-                  <span class="size">${sizeText}</span>
-                </div>
                 <div class="label-qr" data-qr="${qrValue}">
                   <img alt="QR ${qrValue}">
                   <span class="qr-fallback">QR lỗi</span>
+                </div>
+                <div class="label-text">
+                  <div class="label-text-rotate">
+                    <span class="code">${sku}</span>
+                    <span class="sep">-</span>
+                    <span class="size">${sizeText}</span>
+                  </div>
                 </div>
               </div>
             `;
@@ -1660,13 +1684,16 @@
             }
             return `
               <div class="label-cell">
-                <div class="label-text">
-                  <span class="code">${label.code}</span>
-                  <span class="size">${label.size}</span>
-                </div>
                 <div class="label-qr" data-qr="${label.value}">
                   <img alt="QR ${label.value}">
                   <span class="qr-fallback">QR lỗi</span>
+                </div>
+                <div class="label-text">
+                  <div class="label-text-rotate">
+                    <span class="code">${label.code}</span>
+                    <span class="sep">-</span>
+                    <span class="size">${label.size}</span>
+                  </div>
                 </div>
               </div>
             `;
